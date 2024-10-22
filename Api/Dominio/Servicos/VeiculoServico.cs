@@ -1,55 +1,61 @@
-using MinimalApi.Dominio.Entidades;
-using MinimalApi.DTOs;
-using MinimalApi.Infraestrutura.Db;
-using MinimalApi.Dominio.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using minimal_api.Dominio.DTOs;
+using minimal_api.Dominio.Entidades;
+using minimal_api.Dominio.Interfaces;
+using minimal_api.Infraestrutura.Db;
 
-namespace MinimalApi.Dominio.Servicos;
-
-public class VeiculoServico : IVeiculoServico
+namespace minimal_api.Dominio.Servicos
 {
-    private readonly DbContexto _contexto;
-    public VeiculoServico(DbContexto contexto)
+    public class VeiculoServico : IVeiculosServico
     {
-        _contexto = contexto;
-    }
-
-    public void Apagar(Veiculo veiculo)
-    {
-        _contexto.Veiculos.Remove(veiculo);
-        _contexto.SaveChanges();
-    }
-
-    public void Atualizar(Veiculo veiculo)
-    {
-        _contexto.Veiculos.Update(veiculo);
-        _contexto.SaveChanges();
-    }
-
-    public Veiculo? BuscaPorId(int id)
-    {
-        return _contexto.Veiculos.Where(v => v.Id == id).FirstOrDefault();
-    }
-
-    public void Incluir(Veiculo veiculo)
-    {
-        _contexto.Veiculos.Add(veiculo);
-        _contexto.SaveChanges();
-    }
-
-    public List<Veiculo> Todos(int? pagina = 1, string? nome = null, string? marca = null)
-    {
-        var query = _contexto.Veiculos.AsQueryable();
-        if(!string.IsNullOrEmpty(nome))
+        private readonly DbContexto _contexto;
+        public VeiculoServico(DbContexto contexto)
         {
-            query = query.Where(v => EF.Functions.Like(v.Nome.ToLower(), $"%{nome}%"));
+            _contexto = contexto;
         }
 
-        int itensPorPagina = 10;
+        public void Apagar(Veiculo veiculo)
+        {
+            _contexto.Veiculos.Remove(veiculo);
+            _contexto.SaveChanges();
+        }
 
-        if(pagina != null)
-            query = query.Skip(((int)pagina - 1) * itensPorPagina).Take(itensPorPagina);
+        public void Atualizar(Veiculo veiculo)
+        {
+            _contexto.Veiculos.Update(veiculo);
+            _contexto.SaveChanges();
+        }
 
-        return query.ToList();
+        public Veiculo? BuscaPorId(int id)
+        {
+           return _contexto.Veiculos.Where(v => v.Id == id).FirstOrDefault();
+        }
+
+        public void Incluir(Veiculo veiculo)
+        {
+            _contexto.Veiculos.Add(veiculo);
+            _contexto.SaveChanges();
+        }
+
+        public List<Veiculo> Todos(int? pagina = 1, string? nome = null, string? marca = null)
+        {
+            var query = _contexto.Veiculos.AsQueryable();
+            if(!string.IsNullOrEmpty(nome))
+            {
+                query = query.Where(v => EF.Functions.Like(v.Nome.ToLower(), $"%{nome.ToLower()}%"));
+            }
+
+            int itensPorPagina = 10;
+
+            if (pagina != null)
+                query = query.Skip(((int)pagina - 1) * itensPorPagina).Take(itensPorPagina);
+                return query.ToList();
+            
+        }
+
     }
 }

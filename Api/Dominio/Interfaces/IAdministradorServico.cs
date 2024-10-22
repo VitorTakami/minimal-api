@@ -1,13 +1,19 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using minimal_api.Dominio.Servicos;
+using minimal_api.Dominio.Entidades;
+using minimal_api.Dominio.DTOs;
 
-using MinimalApi.Dominio.Entidades;
-using MinimalApi.DTOs;
-
-namespace MinimalApi.Dominio.Interfaces;
-
-public interface IAdministradorServico
+namespace minimal_api.Dominio.Interfaces
 {
-    Administrador? Login(LoginDTO loginDTO);
-    Administrador Incluir(Administrador administrador);
-    Administrador? BuscaPorId(int id);
-    List<Administrador> Todos(int? pagina);
+    
+    public interface IAdministradorServico
+    {
+        Administrador? Login(LoginDTO loginDTO);
+        Administrador Incluir(Administrador id);
+        Administrador? BuscaPorId(int id);
+        List<Administrador> Todos(int? pagina);
+    }
 }

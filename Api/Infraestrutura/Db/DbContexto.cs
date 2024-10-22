@@ -1,42 +1,53 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using MinimalApi.Dominio.Entidades;
+using minimal_api.Dominio.Entidades;
 
-namespace MinimalApi.Infraestrutura.Db;
-
-public class DbContexto : DbContext
+namespace minimal_api.Infraestrutura.Db
 {
-    private readonly IConfiguration _configuracaoAppSettings;
-    public DbContexto(IConfiguration configuracaoAppSettings)
+    public class DbContexto: DbContext
     {
-        _configuracaoAppSettings = configuracaoAppSettings;
-    }
-
-    public DbSet<Administrador> Administradores { get; set; } = default!;
-    public DbSet<Veiculo> Veiculos { get; set; } = default!;
-
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Administrador>().HasData(
-            new Administrador {
-                Id = 1,
-                Email = "administrador@teste.com",
-                Senha = "123456",
-                Perfil = "Adm"
-             }
-        );
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if(!optionsBuilder.IsConfigured)
+        private readonly IConfiguration _configurationAppSettings;
+        public DbContexto(IConfiguration configurationAppSettings)
         {
-            var stringConexao = _configuracaoAppSettings.GetConnectionString("MySql")?.ToString();
-            if(!string.IsNullOrEmpty(stringConexao))
+            _configurationAppSettings = configurationAppSettings;
+        }
+
+        public DbContexto()
+        {
+        }
+
+        public DbSet<Administrador> Administradores {get; set;} = default!;
+
+        public DbSet<Veiculo> Veiculos {get; set;} = default!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Administrador>().HasData(
+                new Administrador {
+                    Id = 1,
+                    Email = "administrador@teste.com",
+                    Senha = "123456",
+                    Perfil = "Adm"
+                }
+            );
+            base.OnModelCreating(modelBuilder);
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql(
+                var stringConexao = _configurationAppSettings.GetConnectionString("MySql")?.ToString();
+                if(!string.IsNullOrEmpty(stringConexao))
+                {
+                    optionsBuilder.UseMySql(
                     stringConexao,
                     ServerVersion.AutoDetect(stringConexao)
-                );
+                    );
+                }
             }
         }
     }
